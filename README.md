@@ -5,7 +5,7 @@
 ESP32
 Arduino Uno
 LED
-Resistor (220Ω – 330Ω)
+Resistor 220Ω
 Jumper wires
 Power bank (for ESP32)
 USB cable (for Arduino)
