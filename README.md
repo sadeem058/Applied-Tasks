@@ -111,3 +111,114 @@ else if (data == "OFF") {
   Serial.println("LED is NOW OFF");
 }
 If "OFF" → turn LED OFF
+
+# ESP32 Stepper Motor Control via Web Server
+Project Overview
+
+This project demonstrates how to control a 28BYJ-48 Stepper Motor using an ESP32 and a ULN2003 driver over a local Wi-Fi network (Access Point mode).
+
+The ESP32 creates its own Wi-Fi network and hosts a simple web page that allows the user to control the motor direction:
+
+Clockwise (Forward)
+Counter-Clockwise (Backward)
+
+## Components
+ESP32
+28BYJ-48 Stepper Motor
+ULN2003 Motor Driver
+Jumper Wires
+Power Supply
+
+## Wiring & Pin Mapping
+
+[m](https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Image%202026-04-23%20at%2012.47.07%20PM.jpeg)
+[m](https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Image%202026-04-23%20at%2012.47.08%20PM.jpeg)
+
+Connections:
+IN1 → GPIO 17
+IN2 → GPIO 19
+IN3 → GPIO 5
+IN4 → GPIO 18
+VCC → 5V
+GND → GND
+
+### Important Note:
+The pin sequence in the code is adjusted to: (17, 5, 19, 18)
+
+This is required because the Stepper library needs a specific sequence to ensure correct rotation in both directions.
+
+## How It Works
+[![v](WhatsAppImage2026-04-23at12.33.01PM(1).jpeg)(https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Video%202026-04-23%20at%2011.50.49%20AM.mp4)]
+The ESP32 creates a Wi-Fi network named:
+Sadeem
+After connecting to the network, open a browser and go to:
+192.168.4.1
+A simple web page will appear with two control links:
+/H → Move motor forward (clockwise)
+/L → Move motor backward (counter-clockwise)
+![1](https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Image%202026-04-23%20at%2012.47.11%20PM.jpeg)
+When a link is clicked:
+An HTTP request is sent to the ESP32
+The ESP32 reads the request
+The motor rotates based on the command
+## Code 
+
+![c](https://github.com/sadeem058/Applied-Tasks/blob/main/Screenshot%20(102).png)
+![c1](https://github.com/sadeem058/Applied-Tasks/blob/main/Screenshot%20(103).png)
+
+## Explanation
+📌 1. Library Inclusion
+#include <Arduino.h>
+#include <WiFi.h>
+#include <NetworkClient.h>
+#include <WiFiAP.h>
+#include <Stepper.h>
+WiFi.h → Creates the Access Point
+NetworkServer → Handles HTTP requests
+Stepper.h → Controls the stepper motor
+📌 2. Stepper Configuration
+const int stepsPerRevolution = 2048;
+Stepper myStepper(stepsPerRevolution, 17, 5, 19, 18);
+2048 steps = one full rotation
+Pin order is adjusted for correct direction control
+📌 3. Wi-Fi and Server Setup
+const char *ssid = "Sadeem";
+const char *password = "123456789";
+
+NetworkServer server(80);
+Creates a Wi-Fi Access Point
+Runs a web server on port 80
+📌 4. setup() Function
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  myStepper.setSpeed(10);
+Sets motor speed (RPM)
+WiFi.softAP(ssid, password);
+Starts the Wi-Fi network
+server.begin();
+Starts the server
+📌 5. loop() Function
+Accept Client Connection:
+NetworkClient client = server.accept();
+Read HTTP Request:
+char c = client.read();
+📌 6. Send Web Page
+client.print("<h1>Sadeem's Stepper Control</h1>");
+client.print("Click <a href=\"/H\">here</a> to move Forward (CW).<br>");
+client.print("Click <a href=\"/L\">here</a> to move Backward (CCW).<br>");
+📌 7. Motor Control Logic
+Forward (Clockwise):
+if (currentLine.endsWith("GET /H")) {
+  myStepper.step(stepsPerRevolution);
+}
+Backward (Counter-Clockwise):
+if (currentLine.endsWith("GET /L")) {
+  myStepper.step(-stepsPerRevolution);
+}
+## How to Use
+Upload the code to your ESP32
+Connect to Wi-Fi:
+Sadeem
+Open your browser and go to:
+192.168.4.1
+Click the links to control the motor
