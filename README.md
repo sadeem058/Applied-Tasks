@@ -23,7 +23,7 @@ Short leg (Cathode): → GND
 ## How It Works
 
 This project demonstrates serial communication between an ESP32 (transmitter) and an Arduino Uno (receiver).
-[![p3](WhatsApp%20Image%202026-04-22%20at%2010.47.32%20PM.jpeg)](https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Video%202026-04-22%20at%2010.30.13%20PM.mp4)
+[![p3](WhatsApp%20Image%202026-04-22%20at%2010.47.32%20PM.jpeg)](WhatsAppVideo2026-04-23at11.50.49AM.mp4)]
 
 ### ESP32 (Transmitter)
 Uses Serial2 instead of the default serial
