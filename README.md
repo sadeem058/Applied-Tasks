@@ -148,7 +148,7 @@ The pin sequence in the code is adjusted to: (17, 5, 19, 18)
 This is required because the Stepper library needs a specific sequence to ensure correct rotation in both directions.
 
 ## How It Works
-[![v](WhatsAppImage2026-04-23at12.33.01PM(1).jpeg)(https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Video%202026-04-23%20at%2011.50.49%20AM.mp4)]
+![x](https://github.com/sadeem058/Applied-Tasks/blob/main/WhatsApp%20Image%202026-04-23%20at%2012.33.01%20PM%20(1).jpeg)
 The ESP32 creates a Wi-Fi network named:
 Sadeem
 After connecting to the network, open a browser and go to:
