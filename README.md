@@ -112,7 +112,7 @@ else if (data == "OFF") {
 }
 If "OFF" → turn LED OFF
 
-# ESP32 Stepper Motor Control via Web Server
+# Solve ESP32 Stepper Motor Control via Web Server
 Project Overview
 
 This project demonstrates how to control a 28BYJ-48 Stepper Motor using an ESP32 and a ULN2003 driver over a local Wi-Fi network (Access Point mode).
@@ -162,9 +162,92 @@ An HTTP request is sent to the ESP32
 The ESP32 reads the request
 The motor rotates based on the command
 ## Code 
+```
+#include <Arduino.h>
+#include <WiFi.h>
+#include <NetworkClient.h>
+#include <WiFiAP.h>
+#include <Stepper.h>
 
-![c](https://github.com/sadeem058/Applied-Tasks/blob/main/Screenshot%20(102).png)
-![c1](https://github.com/sadeem058/Applied-Tasks/blob/main/Screenshot%20(103).png)
+// Stepper motor setup
+const int stepsPerRevolution = 2048;
+
+// Pin order adjusted for correct rotation
+Stepper myStepper(stepsPerRevolution, 17, 5, 19, 18);
+
+#ifndef LED_BUILTIN
+#define LED_BUILTIN 2
+#endif
+
+const char *ssid = "Sadeem";
+const char *password = "123456789";
+
+NetworkServer server(80);
+
+void setup() {
+  pinMode(LED_BUILTIN, OUTPUT);
+  myStepper.setSpeed(10);
+
+  Serial.begin(115200);
+  Serial.println("Starting Access Point...");
+
+  WiFi.softAP(ssid, password);
+
+  IPAddress myIP = WiFi.softAPIP();
+  Serial.print("IP Address: ");
+  Serial.println(myIP);
+
+  server.begin();
+}
+
+void loop() {
+  NetworkClient client = server.accept();
+
+  if (client) {
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+
+        if (c == '\n') {
+          if (currentLine.length() == 0) {
+            // Send HTML page
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println();
+
+            client.println("<h1>Stepper Control</h1>");
+            client.println("<a href=\"/H\">Forward</a><br>");
+            client.println("<a href=\"/L\">Backward</a><br>");
+
+            client.println();
+            break;
+          } else {
+            currentLine = "";
+          }
+        } else if (c != '\r') {
+          currentLine += c;
+        }
+
+        // Forward
+        if (currentLine.endsWith("GET /H")) {
+          digitalWrite(LED_BUILTIN, HIGH);
+          myStepper.step(stepsPerRevolution);
+        }
+
+        // Backward
+        if (currentLine.endsWith("GET /L")) {
+          digitalWrite(LED_BUILTIN, LOW);
+          myStepper.step(-stepsPerRevolution);
+        }
+      }
+    }
+
+    client.stop();
+  }
+}
+```
 
 ## Explanation
 📌 1. Library Inclusion
